@@ -1,0 +1,29 @@
+project:
+  name: NeuroBot
+  mode: replay
+  seed: 42
+
+data:
+  dataset: eegbci
+  root: data/raw
+  subjects: [1]
+  runs: [6, 10, 14]
+  # Event IDs must be inspected from downloaded recordings before mapping.
+  event_mapping: null
+
+preprocessing:
+  notch_hz: 50
+  bandpass_hz: [8, 30]
+  # Epoch interval is intentionally unset until annotations are inspected.
+  epoch_tmin: null
+  epoch_tmax: null
+
+model:
+  baseline: csp_lda
+  confidence_threshold: 0.70
+  stable_windows: 3
+
+control:
+  default_command: HOLD
+  command_timeout_ms: 500
+  simulation_enabled: false

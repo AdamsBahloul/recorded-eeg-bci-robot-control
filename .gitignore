@@ -1,0 +1,29 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# EEG source data, caches, derived data and large model artifacts
+data/raw/
+data/processed/
+data/cache/
+models/
+checkpoints/
+*.edf
+*.fif
+*.pt
+*.pth
+*.onnx
+
+# Generated outputs
+reports/generated/
+logs/
+*.log
+coverage.xml
+htmlcov/
+dist/
+build/

@@ -1,0 +1,9 @@
+mne
+numpy
+scipy
+pandas
+matplotlib
+scikit-learn
+mujoco
+pytest
+ruff

@@ -1,0 +1,3 @@
+# Install after the CSP + LDA baseline is working.
+torch
+moabb
