@@ -11,6 +11,17 @@ __pycache__/
 .env.*
 !.env.example
 
+# Local AI assistant instructions and generated editor context
+AGENTS.md
+CODEX_START_PROMPT.md
+.github/copilot-instructions.md
+**/*.agent.md
+**/*.prompt.md
+
+# Editor and local tooling state
+.idea/
+.vscode/
+
 # EEG source data, caches, derived data and large model artifacts
 data/raw/
 data/processed/

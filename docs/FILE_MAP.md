@@ -5,9 +5,6 @@
 - `README.md` — project summary, scope, and links to the guides.
 - `docs/GETTING_STARTED.md` — walkthrough from the interactive synthetic demo through the Mac/Pi recorded EEG cycle.
 - `docs/PUBLISHING.md` — checks to complete before publishing on GitHub.
-- `AGENTS.md` — project constraints and development rules.
-
-For project changes, read context in this order: `AGENTS.md`, `README.md`, then the relevant files in `docs/` (`PROJECT_BRIEF.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `DATA_AND_EVALUATION.md`, `SAFETY.md`, `TECH_DECISIONS.md`, and `M3_RUNTIME.md`). `CODEX_START_PROMPT.md` is the initial Codex task prompt; it is not a user run guide.
 
 ## Source packages
 

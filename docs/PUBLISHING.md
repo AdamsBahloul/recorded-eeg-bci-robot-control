@@ -8,4 +8,4 @@ The repository is structured for source control, but review these items before m
 4. **Verify the setup guide.** The Pi deployment guide targets 64-bit Raspberry Pi OS and Python 3.11. Mark hardware checks as unverified unless they have been run on the physical device.
 5. **Review current project state.** `git status --short` may include earlier local implementation changes. Inspect and commit the intended source and documentation together; do not assume all current changes belong to this documentation cleanup.
 
-Publishing means creating a GitHub repository and pushing commits. This checklist and documentation change do not create a remote or publish files.
+Publishing means creating a GitHub repository and pushing commits. Review the repository status and staged file list before each release.
