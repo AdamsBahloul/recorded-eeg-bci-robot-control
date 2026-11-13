@@ -6,6 +6,10 @@ NeuroBot is a reproducible educational BCI prototype that turns **recorded** mot
 
 > **This is a research and education prototype, not a medical device.** It does not acquire live EEG and it does not control physical hardware.
 
+## Research paper
+
+Read the [NeuroBot research paper](neurobot.pdf) for the project's motivation, system design, methodology, and experimental scope.
+
 ## What makes it useful
 
 - **End-to-end data path:** Mac replay, bounded EEG transport, Pi-side inference, command validation, and simulation.
