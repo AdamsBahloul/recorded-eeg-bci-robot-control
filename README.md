@@ -32,6 +32,20 @@ The fastest way to explore the project is the synthetic EEG and 3D arm demo:
 
 This demo uses generated signals and an illustrative classifier. It demonstrates the UI and arm sequence, but it does **not** evaluate the recorded-data CSP+LDA pipeline.
 
+### UI screenshots
+
+**Replay-ready control screen**
+
+![NeuroBot replay-ready control screen](ui-replay-ready.png)
+
+**Synthetic EEG replay with live signal traces**
+
+![NeuroBot synthetic EEG replay](ui-synthetic-eeg-replay.png)
+
+**MuJoCo arm simulation**
+
+![NeuroBot MuJoCo arm simulation](ui-arm-simulation.png)
+
 ### 2. Run the recorded EEG pipeline
 
 For the full Mac-to-Pi replay workflow, including approved dataset setup, model packaging, device installation, and launch commands, follow the [Getting Started guide](docs/GETTING_STARTED.md).
