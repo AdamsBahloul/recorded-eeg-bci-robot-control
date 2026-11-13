@@ -1,0 +1,5 @@
+# Milestone 1: EEG loading, preprocessing, plots, and focused checks.
+# MuJoCo, scikit-learn, PyTorch, and API packages are intentionally deferred.
+mne
+matplotlib
+pytest

@@ -1,0 +1,3 @@
+# M2/M3 classifier stack with the tested M1 environment and its transitive versions.
+-r requirements-m1-lock.txt
+scikit-learn==1.9.1

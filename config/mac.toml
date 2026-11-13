@@ -1,0 +1,16 @@
+[network]
+bind_host = "0.0.0.0"
+port = 8765
+client_timeout_seconds = 30
+maximum_command_age_seconds = 2.0
+
+[data]
+raw_directory = "data/raw/MNE-eegbci-data/files/eegmmidb/1.0.0/S001"
+runs = [6, 10, 14]
+
+[simulation]
+enabled = false
+
+[replay]
+chunk_samples = 512
+speed = 1000.0

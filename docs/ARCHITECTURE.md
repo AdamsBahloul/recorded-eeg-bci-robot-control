@@ -1,59 +1,50 @@
-# Architecture
+# Final architecture — recorded-data distributed BCI
 
-## High-level flow
-Public EEG recording
-  -> dataset loader
-  -> preprocessing / epoching
-  -> baseline classifier
-  -> offline/replay inference
-  -> validated command contract
-  -> safety gate
-  -> MuJoCo simulation
-  -> (later) dashboard
+## Data path
 
-Later embedded path:
-BCI host on Mac -> transport adapter -> Raspberry Pi command gateway -> simulation or hardware abstraction.
-No physical actuators are in the current scope.
-
-## Runtime boundaries
-- `bci/`: dataset handling, preprocessing, feature extraction, training, evaluation, inference.
-- `robotics/`: MuJoCo model, simulator adapter, command-to-motion mapping, safety limits.
-- `embedded/`: later Raspberry Pi receiver and service management.
-- `dashboard/`: later frontend and API.
-- `config/`: versioned non-secret configuration.
-- `data/`: downloaded source data and derived artifacts; never commit.
-- `models/`: trained weights and metadata; never commit large weights by default.
-- `reports/`: generated metrics and plots; commit only intentionally selected small reports.
-- `tests/`: unit and integration tests.
-
-## Recommended initial execution
-Keep the initial pipeline in one Python environment on macOS. Use MuJoCo's native macOS support for simulation. Do not introduce ROS 2 until a standalone BCI-to-MuJoCo vertical slice works.
-
-## ROS 2 decision
-ROS 2 is a later integration, not a prerequisite. The preferred path is a supported Ubuntu 24.04 ARM64 environment, subject to the exact Raspberry Pi model and OS. Do not assume ROS 2 Jazzy binaries are natively supported on macOS. Verify official compatibility before installation.
-
-## Communication design
-Define and test a transport-independent message model before selecting MQTT or ROS 2. MQTT can be a simple later Mac-to-Pi transport. ROS 2 can be added for robot middleware if justified. Avoid running both until there is a clear reason.
-
-## Command message
-Example (illustrative schema only):
-```json
-{
-  "command": "MOVE_LEFT",
-  "confidence": 0.82,
-  "timestamp": "2026-11-12T12:00:00Z",
-  "source": "REPLAY",
-  "model_version": "csp-lda-v0",
-  "sequence": 42,
-  "valid_for_ms": 500
-}
+```text
+MacBook: existing PhysioNet recording
+  -> recorded EEG signal message (samples + timing/channel metadata)
+  -> Raspberry Pi 3 B+: validate signal input
+  -> deployment preprocessing -> CSP features -> LDA
+  -> confidence + temporal stability + Pi safety state machine
+  -> versioned HANDS / FEET / HOLD command
+  -> MacBook: independent command validation
+  -> MuJoCo robotic-arm simulation
 ```
-Confidence is a model score unless probability calibration is explicitly evaluated. `source` must be `REPLAY` for the current data path.
 
-## Mac M4 / 16 GB guidance
-- Start with one participant and only needed runs.
-- Do not preload all participants or all EDF files.
-- Use small batches and close unused applications during training.
-- Start with CSP + LDA; add EEGNet only after baseline correctness.
-- Prefer native macOS MuJoCo. Avoid a heavy VM unless ROS 2 is needed.
-- Keep large datasets and model weights outside Git.
+All EEG is recorded PhysioNet data from participant 1, runs 6, 10, and 14. The system has no live EEG acquisition path. Mac-to-Pi messages must carry signal values, never just Mac-computed predictions or labels.
+
+## Responsibility boundaries
+
+### MacBook Pro M4
+
+- Stores the existing raw recordings and M1 processed artifacts.
+- Replays and transfers recorded EEG signal data with schema, source, run, epoch, sample rate, channel order, dimensions, and timestamp metadata.
+- Trains/packages versioned deployment models; retains separate run-held-out M2 evaluation artifacts.
+- Hosts the robotic-arm simulation and a receiver that validates Pi commands independently before applying bounded actions.
+- Stops or holds the simulation on invalid commands, stale messages, or Pi communication loss.
+
+### Raspberry Pi 3 Model B+
+
+- Receives and validates actual EEG sample arrays from the Mac.
+- Performs the documented deployment preprocessing and CSP+LDA inference locally.
+- Computes/validates the documented decision margin, stability, timeouts, command rate, sequence, and safety state.
+- Emits only versioned HANDS, FEET, HOLD commands. Default state and startup state are HOLD.
+- Reports health and communicates failures. The Pi's OS must be inspected before device-specific setup.
+
+## Model boundaries
+
+The M2 evaluation model uses shuffled three-fold StratifiedGroupKFold grouped by run, seed 42, CSP(4)+LDA(SVD). Each epoch is predicted only by a model that excluded its entire recording run. These OOF models and predictions are for evaluation/replay validation, not a model trained on all samples.
+
+The deployment package is distinct, versioned, and contains the fitted preprocessing/classification parameters and metadata. For a replay that must preserve held-out evaluation, select the model that excluded the replayed run. Any model fitted on all permitted data is for demonstration inference only and must not be scored against those training epochs as an unseen test.
+
+The original M1 files and artifacts are immutable inputs to later milestones. Derived packages and logs live in separate M2/M3/deployment output paths and stay out of Git.
+
+## Communication and validation
+
+Define versioned, bounded schemas for EEG input, command output, heartbeat/status, and acknowledgements. Include unique IDs/sequences and timestamps. Reject malformed, duplicate, out-of-order, stale, wrong-source, or wrong-version messages. Keep transport behind interfaces; choose a lightweight transport only after checking the Pi's OS and network environment. Both the Pi and Mac simulation receiver enforce safety independently.
+
+## Runtime and scope exclusions
+
+Python 3.11 is the current development environment. The Mac simulation uses MuJoCo after compatibility is checked. The Pi runtime should use only dependencies supported by its inspected OS and architecture. No ROS 2, dashboard, web API, live EEG API, physical hardware path, or additional dataset is part of the final architecture.

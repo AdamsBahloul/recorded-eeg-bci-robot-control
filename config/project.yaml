@@ -8,20 +8,24 @@ data:
   root: data/raw
   subjects: [1]
   runs: [6, 10, 14]
-  # Event IDs must be inspected from downloaded recordings before mapping.
-  event_mapping: null
+  # Verified from S001R06/R10/R14 annotations; MNE numeric IDs are resolved at runtime.
+  event_mapping:
+    T1: imagined_hands
+    T2: imagined_feet
 
 preprocessing:
-  notch_hz: 50
+  notch_hz: null
   bandpass_hz: [8, 30]
-  # Epoch interval is intentionally unset until annotations are inspected.
-  epoch_tmin: null
-  epoch_tmax: null
+  epoch_tmin: 1.0
+  epoch_tmax: 4.0
 
 model:
   baseline: csp_lda
-  confidence_threshold: 0.70
   stable_windows: 3
+  confidence:
+    mode: decision_score_margin
+    enabled: false
+    threshold: 0.0
 
 control:
   default_command: HOLD

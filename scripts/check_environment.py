@@ -3,7 +3,13 @@
 from __future__ import annotations
 
 import platform
+import os
 import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_ROOT / "data/cache/matplotlib"))
+os.environ.setdefault("XDG_CACHE_HOME", str(PROJECT_ROOT / "data/cache"))
 
 
 def main() -> None:
@@ -11,7 +17,7 @@ def main() -> None:
     print(f"Platform: {platform.platform()}")
     print(f"Architecture: {platform.machine()}")
 
-    modules = ["numpy", "scipy", "mne", "sklearn", "mujoco"]
+    modules = ["numpy", "scipy", "mne", "matplotlib"]
     for name in modules:
         try:
             module = __import__(name)
@@ -21,9 +27,7 @@ def main() -> None:
             print(f"[MISSING/ERROR] {name}: {exc}")
             raise SystemExit(1) from exc
 
-    import mujoco
-    print(f"[OK] MuJoCo version: {mujoco.__version__}")
-    print("Environment smoke test passed.")
+    print("Milestone 1 environment smoke test passed. MuJoCo is deferred.")
 
 
 if __name__ == "__main__":

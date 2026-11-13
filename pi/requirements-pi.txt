@@ -1,0 +1,3 @@
+# Target: Raspberry Pi 3 B+, 64-bit Linux (aarch64), CPython 3.11.
+# Fully pinned dependency set; OS compatibility must be inspected before install.
+-r requirements-pi-lock.txt

@@ -24,7 +24,7 @@ def parse_args() -> argparse.Namespace:
         type=int,
         nargs="+",
         default=[6, 10, 14],
-        help="EEGBCI run IDs. Defaults to imagined left/right fist runs.",
+        help="EEGBCI run IDs. Defaults to imagined hands/feet imagery (6, 10, 14).",
     )
     parser.add_argument(
         "--data-dir",
@@ -46,7 +46,7 @@ def main() -> None:
         import mne
     except ImportError as exc:
         raise SystemExit(
-            "MNE is not installed. Activate .venv and install requirements-core.txt."
+            "MNE is not installed. Activate .venv and install requirements-m1.txt."
         ) from exc
 
     destination = args.data_dir.resolve()

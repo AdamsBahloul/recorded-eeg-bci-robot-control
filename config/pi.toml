@@ -1,0 +1,14 @@
+[model]
+path = "models/deployment/csp_lda.joblib"
+manifest = "models/deployment/manifest.json"
+
+[runtime]
+config = "config/m3.toml"
+
+[network]
+# Supply the MacBook's LAN address via the --host command-line option.
+port = 8765
+connect_timeout_seconds = 10
+
+[device]
+device_id = "raspberry-pi-3b-plus"

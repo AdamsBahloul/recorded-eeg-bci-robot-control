@@ -1,0 +1,44 @@
+# Explicit operator-requested, UNVALIDATED demonstration override.
+# Simulation-only. Do not use for physical hardware or treat margins as probabilities.
+[paths]
+epochs = "data/processed/m1/S001_epochs.npz"
+metadata = "data/processed/m1/S001_metadata.json"
+m2_predictions = "data/processed/m2/out_of_fold_predictions.npz"
+m2_metrics = "data/processed/m2/metrics.json"
+output_directory = "data/processed/m3"
+
+[classifier]
+csp_components = 4
+lda_solver = "svd"
+n_splits = 3
+shuffle = true
+random_seed = 42
+group_by = "run"
+
+[replay]
+delay_between_epochs_seconds = 0.75
+speed = 1.0
+deterministic_mode = false
+post_active_display_seconds = 2.0
+
+[confidence]
+mode = "decision_score_margin"
+# User-requested unvalidated floor for a simulation demonstration only.
+enabled = true
+threshold = 0.01
+threshold_direction = "greater_equal"
+
+[stability]
+required_consecutive_predictions = 3
+window_seconds = 2.0
+maximum_prediction_interval_seconds = 1.0
+
+[safety]
+command_cooldown_seconds = 2.0
+maximum_active_commands_per_minute = 10
+maximum_prediction_age_seconds = 0.75
+prediction_timeout_seconds = 3.0
+
+[logging]
+level = "INFO"
+event_log = "data/processed/m3/unvalidated_simulation_demo_events.jsonl"

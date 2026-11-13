@@ -14,20 +14,24 @@ if [[ "$ARCH" != "arm64" ]]; then
   echo "Warning: expected Apple Silicon arm64, detected: $ARCH"
 fi
 
-if ! command -v python3.11 >/dev/null 2>&1; then
+PYTHON311="$(command -v python3.11 || true)"
+if [[ -z "$PYTHON311" && -x /opt/homebrew/bin/python3.11 ]]; then
+  PYTHON311="/opt/homebrew/bin/python3.11"
+fi
+
+if [[ -z "$PYTHON311" ]]; then
   echo "Python 3.11 was not found."
-  echo "Install Python 3.11 (for example from python.org or Homebrew), then rerun."
+  echo "Install Python 3.11, then rerun."
   exit 1
 fi
 
-python3.11 -m venv .venv
+"$PYTHON311" -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip setuptools wheel
-python -m pip install -r requirements-core.txt
+python -m pip install -r requirements-m1-lock.txt
 
 echo
-echo "Core environment installed."
+echo "Milestone 1 environment installed."
 echo "Activate with: source .venv/bin/activate"
-echo "Optional ML stack later: pip install -r requirements-ml.txt"
-echo "Optional API stack later: pip install -r requirements-api.txt"
+echo "MuJoCo, classifier, and API dependencies are deferred to their milestones."
 echo "Dataset download is a separate, explicit step."

@@ -1,7 +1,11 @@
 .venv/
+.venv-pi/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
+.coverage
+*.egg-info/
 .DS_Store
 .env
 .env.*

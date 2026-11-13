@@ -1,0 +1,2 @@
+# MacBook Pro M4 visual arm simulation (Python 3.11, macOS ARM64).
+mujoco==3.3.7

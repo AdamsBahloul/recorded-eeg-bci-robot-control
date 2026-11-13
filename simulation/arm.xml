@@ -1,0 +1,114 @@
+<mujoco model="neurobot_pick_and_place_arm">
+  <compiler angle="radian" autolimits="true" balanceinertia="true"/>
+  <option timestep="0.002" integrator="RK4" gravity="0 0 -9.81" iterations="80"/>
+  <visual>
+    <headlight diffuse="0.86 0.83 0.74" ambient="0.48 0.45 0.38" specular="0.12 0.11 0.09"/>
+    <rgba haze="0.78 0.75 0.66 1"/>
+    <quality shadowsize="4096" offsamples="4"/>
+    <map znear="0.01" zfar="20"/>
+  </visual>
+  <asset>
+    <texture name="floor_checker" type="2d" builtin="checker" rgb1="0.70 0.68 0.61" rgb2="0.74 0.72 0.65" width="512" height="512"/>
+    <material name="floor_mat" texture="floor_checker" texrepeat="5 5" reflectance="0.015"/>
+    <material name="arm_dark" rgba="0.20 0.20 0.18 1" specular="0.18" shininess="0.18"/>
+    <material name="arm_light" rgba="0.78 0.75 0.66 1" specular="0.22" shininess="0.20"/>
+    <material name="arm_blue" rgba="0.34 0.39 0.36 1" specular="0.20" shininess="0.18"/>
+    <material name="arm_orange" rgba="0.58 0.22 0.15 1" specular="0.16" shininess="0.16"/>
+    <material name="table_mat" rgba="0.49 0.47 0.41 1" specular="0.06" shininess="0.10"/>
+  </asset>
+  <default>
+    <joint damping="2" armature="0.04" limited="true"/>
+    <geom density="650" friction="0.8 0.1 0.1"/>
+    <position kp="1000" kv="40" forcelimited="true" forcerange="-600 600"/>
+  </default>
+  <worldbody>
+    <light pos="-1 -1 2.8" dir="0.4 0.2 -1" diffuse="0.88 0.84 0.73" specular="0.14 0.13 0.11"/>
+    <light pos="1.4 1.2 2.5" dir="-0.5 -0.35 -1" diffuse="0.68 0.69 0.60" specular="0.10 0.10 0.09"/>
+    <!-- Only the loose payload uses the floor as a catch surface. Fingers must
+         be able to pass below table height without striking an invisible floor. -->
+    <geom name="floor" type="plane" size="3 3 0.1" material="floor_mat" contype="16" conaffinity="2"/>
+    <!-- Collision groups: arm links=1, payload=2, table=4, gripper=8, floor=16. -->
+    <geom name="work_table" type="box" pos="0.90 0 0" size="0.65 0.62 0.04" material="table_mat" contype="4" conaffinity="2"/>
+    <geom name="table_apron" type="box" pos="0.90 0  -0.075" size="0.62 0.59 0.035" material="arm_dark" contype="0" conaffinity="0"/>
+    <geom name="table_leg_left" type="box" pos="0.42 -0.45 -0.28" size="0.035 0.035 0.20" material="arm_dark" contype="0" conaffinity="0"/>
+    <geom name="table_leg_right" type="box" pos="1.38 -0.45 -0.28" size="0.035 0.035 0.20" material="arm_dark" contype="0" conaffinity="0"/>
+    <geom name="table_leg_back_left" type="box" pos="0.42 0.45 -0.28" size="0.035 0.035 0.20" material="arm_dark" contype="0" conaffinity="0"/>
+    <geom name="table_leg_back_right" type="box" pos="1.38 0.45 -0.28" size="0.035 0.035 0.20" material="arm_dark" contype="0" conaffinity="0"/>
+    <geom name="base_pedestal" type="cylinder" pos="0 0 0.225" size="0.10 0.225" material="arm_dark" contype="0" conaffinity="0"/>
+    <geom name="pedestal_foot" type="cylinder" pos="0 0 0.035" size="0.19 0.035" material="arm_blue" contype="0" conaffinity="0"/>
+    <geom name="place_a_marker" type="cylinder" pos="0.72 -0.18 0.047" size="0.12 0.006" rgba="0.53 0.46 0.34 0.75" contype="0" conaffinity="0"/>
+    <geom name="place_b_marker" type="cylinder" pos="0.72 0.18 0.047" size="0.12 0.006" rgba="0.38 0.48 0.41 0.75" contype="0" conaffinity="0"/>
+    <geom name="place_a_rail_left" type="box" pos="0.60 -0.18 0.065" size="0.008 0.12 0.025" rgba="0.53 0.46 0.34 1" contype="0" conaffinity="0"/>
+    <geom name="place_a_rail_right" type="box" pos="0.84 -0.18 0.065" size="0.008 0.12 0.025" rgba="0.53 0.46 0.34 1" contype="0" conaffinity="0"/>
+    <geom name="place_a_rail_front" type="box" pos="0.72 -0.30 0.065" size="0.12 0.008 0.025" rgba="0.53 0.46 0.34 1" contype="0" conaffinity="0"/>
+    <geom name="place_a_rail_back" type="box" pos="0.72 -0.06 0.065" size="0.12 0.008 0.025" rgba="0.53 0.46 0.34 1" contype="0" conaffinity="0"/>
+    <geom name="place_b_rail_left" type="box" pos="0.60 0.18 0.065" size="0.008 0.12 0.025" rgba="0.38 0.48 0.41 1" contype="0" conaffinity="0"/>
+    <geom name="place_b_rail_right" type="box" pos="0.84 0.18 0.065" size="0.008 0.12 0.025" rgba="0.38 0.48 0.41 1" contype="0" conaffinity="0"/>
+    <geom name="place_b_rail_front" type="box" pos="0.72 0.06 0.065" size="0.12 0.008 0.025" rgba="0.38 0.48 0.41 1" contype="0" conaffinity="0"/>
+    <geom name="place_b_rail_back" type="box" pos="0.72 0.30 0.065" size="0.12 0.008 0.025" rgba="0.38 0.48 0.41 1" contype="0" conaffinity="0"/>
+    <body name="object" pos="0.72 -0.18 0.09">
+      <freejoint name="object_free"/>
+      <geom name="payload" type="box" size="0.045 0.045 0.045" mass="0.12" material="arm_orange" friction="1.2 0.2 0.1" contype="2" conaffinity="8"/>
+      <site name="payload_center" size="0.008" rgba="1 1 1 0"/>
+    </body>
+    <body name="base" pos="0 0 0.45">
+      <joint name="base_yaw" type="hinge" axis="0 0 1" range="-2.8 2.8"/>
+    <geom name="base_turret" type="cylinder" size="0.135 0.095" material="arm_blue" contype="1" conaffinity="0"/>
+      <geom name="base_turret_cap" type="cylinder" pos="0 0 0.09" size="0.105 0.025" material="arm_light" contype="0" conaffinity="0"/>
+      <body name="shoulder" pos="0 0 0.08">
+        <joint name="shoulder_pitch" type="hinge" axis="0 1 0" range="-1.45 1.2"/>
+        <geom name="shoulder_housing" type="ellipsoid" size="0.125 0.115 0.12" material="arm_dark" contype="0" conaffinity="0"/>
+        <geom name="shoulder_motor" type="cylinder" size="0.093 0.055" euler="1.5708 0 0" material="arm_orange" contype="0" conaffinity="0"/>
+        <geom name="upper_link" type="capsule" fromto="0 0 0 0.34 0 0" size="0.060" material="arm_light" contype="1" conaffinity="0"/>
+        <geom name="upper_link_shroud" type="box" pos="0.18 0 0" size="0.15 0.066 0.055" material="arm_blue" contype="0" conaffinity="0"/>
+        <geom name="upper_link_trim" type="box" pos="0.18 0 0.057" size="0.095 0.035 0.008" material="arm_orange" contype="0" conaffinity="0"/>
+        <body name="upper_arm" pos="0.34 0 0">
+          <joint name="elbow_pitch" type="hinge" axis="0 1 0" range="-2.2 0.25"/>
+          <geom name="elbow_housing" type="ellipsoid" size="0.092 0.10 0.09" material="arm_dark" contype="0" conaffinity="0"/>
+          <geom name="elbow_motor" type="cylinder" size="0.074 0.052" euler="1.5708 0 0" material="arm_orange" contype="0" conaffinity="0"/>
+          <geom name="forearm_link" type="capsule" fromto="0 0 0 0.30 0 0" size="0.046" material="arm_blue" contype="1" conaffinity="0"/>
+          <geom name="forearm_shell" type="box" pos="0.15 0 0" size="0.12 0.052 0.048" material="arm_light" contype="0" conaffinity="0"/>
+          <geom name="forearm_trim" type="box" pos="0.15 0 0.049" size="0.08 0.028 0.007" material="arm_orange" contype="0" conaffinity="0"/>
+          <body name="forearm" pos="0.3 0 0">
+            <joint name="wrist_pitch" type="hinge" axis="0 1 0" range="-1.7 1.7"/>
+            <geom name="wrist_pitch_housing" type="ellipsoid" size="0.069 0.074 0.069" material="arm_dark" contype="0" conaffinity="0"/>
+            <geom name="wrist_link" type="capsule" fromto="0 0 0 0.2 0 0" size="0.035" material="arm_light" contype="1" conaffinity="0"/>
+            <body name="wrist_roll" pos="0.2 0 0">
+              <joint name="wrist_roll_joint" type="hinge" axis="1 0 0" range="-2.8 2.8"/>
+              <geom name="wrist_roll_housing" type="cylinder" size="0.055 0.055" material="arm_orange" contype="0" conaffinity="0"/>
+              <body name="tool_yaw" pos="0.07 0 0">
+                <joint name="tool_yaw_joint" type="hinge" axis="0 0 1" range="-2.8 2.8"/>
+                <geom name="tool_mount" type="capsule" fromto="-0.04 0 0 0.08 0 0" size="0.034" material="arm_dark" contype="0" conaffinity="0"/>
+                <geom name="tool_flange" type="cylinder" pos="0.075 0 0" size="0.058 0.022" euler="0 1.5708 0" material="arm_light" contype="0" conaffinity="0"/>
+                <site name="tool_tip" pos="0.1 0 0" size="0.015" rgba="0.9 0.2 0.15 1"/>
+                <body name="left_finger" pos="0.08 0 0">
+                  <joint name="left_gripper_slide" type="slide" axis="0 1 0" range="-0.055 0" damping="1"/>
+                  <geom name="left_finger_link" type="box" pos="0.03 -0.025 -0.010" size="0.055 0.012 0.015" material="arm_light" contype="8" conaffinity="2"/>
+                  <geom name="left_finger_tip" type="box" pos="0.065 -0.025 -0.023" size="0.020 0.014 0.005" material="arm_orange" contype="8" conaffinity="2"/>
+                </body>
+                <body name="right_finger" pos="0.08 0 0">
+                  <joint name="right_gripper_slide" type="slide" axis="0 1 0" range="0 0.055" damping="1"/>
+                  <geom name="right_finger_link" type="box" pos="0.03 0.025 -0.010" size="0.055 0.012 0.015" material="arm_light" contype="8" conaffinity="2"/>
+                  <geom name="right_finger_tip" type="box" pos="0.065 0.025 -0.023" size="0.020 0.014 0.005" material="arm_orange" contype="8" conaffinity="2"/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <actuator>
+    <position name="base_yaw_act" joint="base_yaw" ctrlrange="-2.8 2.8"/>
+    <position name="shoulder_act" joint="shoulder_pitch" ctrlrange="-1.45 1.2"/>
+    <position name="elbow_act" joint="elbow_pitch" ctrlrange="-2.2 0.25"/>
+    <position name="wrist_pitch_act" joint="wrist_pitch" ctrlrange="-1.7 1.7"/>
+    <position name="wrist_roll_act" joint="wrist_roll_joint" ctrlrange="-2.8 2.8"/>
+    <position name="tool_yaw_act" joint="tool_yaw_joint" ctrlrange="-2.8 2.8"/>
+    <position name="left_gripper_act" joint="left_gripper_slide" kp="100" ctrlrange="-0.055 0" forcelimited="true" forcerange="-12 12"/>
+    <position name="right_gripper_act" joint="right_gripper_slide" kp="100" ctrlrange="0 0.055" forcelimited="true" forcerange="-12 12"/>
+  </actuator>
+  <keyframe>
+    <key name="home" qpos="0.72 -0.18 0.09 1 0 0 0 0 -0.25 -0.7 -0.35 0 0 -0.05 0.05" ctrl="0 -0.25 -0.7 -0.35 0 0 -0.05 0.05"/>
+  </keyframe>
+</mujoco>

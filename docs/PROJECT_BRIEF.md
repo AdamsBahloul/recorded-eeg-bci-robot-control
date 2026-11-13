@@ -1,50 +1,44 @@
 # Project brief
 
-## One-sentence definition
-NeuroBot is a reproducible educational brain-computer-interface prototype that classifies motor-imagery patterns in public EEG recordings and converts the resulting predictions into safe commands for a simulated robotic arm.
+## Objective
 
-## Problem and motivation
-BCI systems can translate measurable brain-signal patterns into external control signals. Motor imagery (imagining a movement without executing it) is a common research paradigm. NeuroBot demonstrates the software pipeline from EEG data to a robot simulation, while making limitations and uncertainty visible.
+NeuroBot is an educational, recorded-data-only BCI prototype. It transfers EEG signal data from the existing PhysioNet participant 1 recordings to a Raspberry Pi 3 Model B+. The Pi preprocesses the signal, runs CSP+LDA, applies confidence, temporal stability, and safety checks, then sends HANDS, FEET, or HOLD commands to a robotic-arm simulation running on the MacBook Pro M4.
 
-## Demonstration target
-A user starts a recorded EEG replay. NeuroBot processes windows of EEG, predicts one of a small number of motor-imagery classes, applies a conservative safety gate, and updates a simulated 6-DOF robotic arm. A dashboard may later show signal traces, predictions, confidence, robot state, and latency.
+There is no live EEG acquisition, EEG headset, physical robot, or actuator control in this project.
 
-## Initial command mapping
-The initial research classifier should distinguish only the classes supported by the selected dataset and evaluation protocol (initially imagined left vs imagined right fist). The command mapping is configurable. For example:
-- left imagery -> MOVE_LEFT
-- right imagery -> MOVE_RIGHT
-- uncertain / rest / invalid -> HOLD
+## Fixed data scope
 
-Do not map classes to forward/backward/grip/release unless the dataset and model support those classes and a separate evaluation demonstrates them.
+- PhysioNet EEG Motor Movement/Imagery Database, participant 1, runs 6, 10, and 14 only.
+- The task is imagined hands versus imagined feet.
+- The verified M1 artifacts contain 45 epochs: 21 hands and 24 feet, with 64 channels and 481 samples per epoch at 160 Hz.
+- Do not acquire additional participants, runs, or datasets.
 
-## Scope
-### In scope
-- Public EEG dataset acquisition and metadata tracking.
-- EEG preprocessing and epoching.
-- CSP + LDA baseline.
-- EEGNet as a later comparison.
-- Subject/session-aware evaluation.
-- Offline deterministic replay.
-- Safe command schema and validation.
-- MuJoCo simulation.
-- Later optional Raspberry Pi command gateway.
-- Later optional dashboard.
+## System responsibilities
 
-### Out of scope initially
-- Medical diagnosis, therapy, or clinical claims.
-- Reading arbitrary thoughts.
-- Real-time acquisition from a human without EEG hardware.
-- Physical robot/actuator control.
-- Training a foundation model or using cloud AI for EEG inference.
-- Complex deployment infrastructure.
+**MacBook Pro M4:** store the existing dataset, prepare and transfer recorded EEG signal input, train/package the CSP+LDA deployment models, host the MuJoCo simulation, and manage the demonstration.
 
-## Success criteria
-1. A fresh clone can be set up using documented commands.
-2. A small, documented EEG subset can be downloaded reproducibly.
-3. Data provenance and event labels are inspected and recorded.
-4. Preprocessing is deterministic and unit-tested.
-5. Baseline evaluation avoids subject/session leakage.
-6. Model metrics are reported honestly with limitations.
-7. Invalid or uncertain predictions result in HOLD.
-8. Simulation can be run without physical hardware.
-9. Mac M4 16 GB constraints are respected.
+**Raspberry Pi 3 Model B+:** receive actual EEG signal values, perform the deployment preprocessing and CSP+LDA inference, apply confidence/stability/safety logic, and generate validated commands. The Pi must not receive Mac-computed labels as its inference input.
+
+**Communication:** carry documented EEG signal messages Mac-to-Pi and validated command messages Pi-to-Mac. Both sides validate messages. Loss, corruption, stale input, or invalid commands produce a safe HOLD/stop response.
+
+## Evaluation and safety
+
+The M2 evaluation remains leakage-safe, run-held-out cross-validation. Its out-of-fold predictions are evaluation outputs, not a deployment model trained for unseen data. The deployment package must remain distinct and versioned. HANDS/FEET commands stay disabled by default until a decision-margin threshold is explicitly configured and validated. LDA scores are not calibrated probabilities.
+
+The final demonstration must prove that the Pi receives EEG signal data and performs its own preprocessing/inference before its commands affect the Mac simulation. Report the Pi's CPU, memory, startup, inference latency, and sustained-operation results only when measured on the actual device. If hardware is unavailable, mark device tests not run.
+
+## In scope
+
+- Reproducible M1 preprocessing and M2 CSP+LDA evaluation.
+- Pi deployment of preprocessing, classification, and safety logic.
+- Mac-to-Pi recorded EEG signal transfer and Pi-to-Mac command communication.
+- Mac-hosted robotic-arm simulation and validated command receiver.
+- Independent judge/reference checks, unit/integration/system/fault-injection tests, and measured benchmarks.
+- Reproducible documentation and an end-to-end final demonstration.
+
+## Out of scope
+
+- Live EEG acquisition, headsets, or acquisition infrastructure.
+- Additional participants, recordings, or datasets.
+- EEGNet/deep learning, ROS 2, MQTT broker infrastructure unless specifically justified for the chosen transport, dashboard/API, cloud services, and physical actuators.
+- Clinical use or claims, arbitrary thought decoding, and real-world BCI performance claims.

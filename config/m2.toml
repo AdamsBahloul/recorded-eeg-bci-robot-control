@@ -1,0 +1,16 @@
+[dataset]
+epochs = "data/processed/m1/S001_epochs.npz"
+metadata = "data/processed/m1/S001_metadata.json"
+
+[model]
+csp_components = 4
+lda_solver = "svd"
+
+[cross_validation]
+n_splits = 3
+shuffle = true
+random_seed = 42
+group_by = "run"
+
+[output]
+directory = "data/processed/m2"
